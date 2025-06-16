@@ -1,0 +1,287 @@
+
+
+---
+title: "**Teste Qui-quadrado de Homogeneidade**"
+author: "***Guilherme Furtado, Gustavo Belfort, Gustavo Nishijima, Keila Mara***"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+
+
+output:
+  html_document:
+    theme: flatly
+    highlight: textmate
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    number_sections: True
+    code_folding: show
+---
+
+
+
+![](https://est.uff.br/wp-content/uploads/sites/168/2020/05/LogoGET-Azul-fundotransp.png)
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.align = "center",
+  fig.width = 8,
+  fig.height = 5,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE
+)
+```
+
+<div style="text-align: justify"> 
+
+# Teoria
+
+**O que é:** o teste Qui-quadrado de Homogeneidade é um dos três tipos de comparações realizadas pelo  teste não paramétrico "Teste Qui-quadrado de Pearson". 
+
+**Objetivo:**  investigar se uma determinada variável qualitativa $Y$ com $k$ categorias se distribui de forma homogênea em $s$ subpopulações de interesse $(s \ge 2)$ definidas por outra variável qualitativa $X$.
+
+**Exemplos de análises para as quais deve-se usar o teste qui-quadrado de homogeneidade:**
+
+a) Para verificar se a preferência da Área de Conhecimento é a mesma entre alunos de sexo Feminino e sexo Masculino $(Y$: Área do Conhecimento; $X$: Sexo$).$
+
+b) Para verificar se as preferências partidárias são as mesmas entre diferentes bairros $(Y$: Preferência Partidária; $X$: Bairro$).$
+
+c) Para verificar se a escolha de atividades de alunos do Ensino Médio tem mudado de classe para classe  $(Y$: Atividade; $X$: Classe do Ensino Médio$).$
+
+
+**Princípio básico usado na execução do teste:** Comparar proporções, analisando possíveis divergências entre as frequências observadas e as frequências esperadas para um certo evento de $Y$ nos $s$ subgrupos que definem as subpopulações de interesse.
+
+## Execução Prática do Teste 
+**Passo 1:**
+Coleta-se dados conjuntamente das variáveis $X$ e $Y$ para uma amostra de tamanho de $N$.
+
+**Passo 2:** 
+Constrói-se uma tabela de contingência, também chamada de tabela cruzada das variáveis $X$ e $Y$,  a partir da contagem de elementos dos dados que estão conjuntamente em cada uma das $k$ categorias da variável $Y$ e em cada uma das $s$ sub-amostras definidas pelas categorias de $X$. Tais contagens são chamadas de **frequências observadas**.
+
+A Tabela cruzada de uma variável $Y$ com $k$ categorias e uma variável $X$ que define $s$ subpopulações de interesse, com  as frequências observadas, fica assim definida: 
+
+
+```{r,warning=FALSE,echo=FALSE}
+library(knitr)
+library(kableExtra)
+
+
+# Criando a matriz corretamente
+tabela0=matrix(c("1","2", "⋮","s","Total",
+                "$O_{11}$","$O_{21}$"," ","$O_{s1}$","$c_1$",
+                "$O_{12}$","$O_{22}$"," ","$O_{s2}$","$c_2$",
+                "...","..."," ","...","...",
+                "$O_{1k}$","$O_{2k}$"," ","$O_{sk}$","$c_k$",
+                "$r_1$","$r_2$"," ","$r_s$","N"),ncol=6,nrow=5)   
+
+
+kable(tabela0,
+      col.names = c("Subpopulações", "1", "2", "...", "k", "Total")) |> 
+  add_header_above(c(" " = 1, "Categorias de Y" = 4, " " = 1)) |>
+  column_spec (2:5,border_left = T, border_right = T) |>
+  kable_styling(bootstrap_options = "stripe",position = "center")
+
+```
+
+onde 
+
+$O_{ij}=$ frequência observada da $i-$ésima linha e $j-$ésima coluna, $1 \le i \le s$ e $1 \le j \le k$ 
+
+ou seja, 
+
+$O_{ij}=$= número de elementos da amostra que tem variável $X$ na $i-$ésima categoria e variável $Y$ na $j-$ésima categoria. 
+
+
+**Passo 3:**
+Calcula-se as **frequências esperadas** em cada possível cruzamento $ij$ das variáveis $X$ e $Y$ definidas por 
+
+$$E_{ij} = \frac {r_ic_j}{N},$$
+onde, 
+
+$r_i=$ total de elementos na $i-$ésima linha, $1 \le i \le s$; 
+
+$c_j=$ total de elementos na $j-$ésima coluna, $1 \le j \le k$.
+
+
+
+**Passo 4:** Executa-se o teste qui quadrado abaixo definido.
+
+##  Definição Estatística do Teste 
+
+Um teste de significância estatística está bem definido se forem definidos: as hipóteses do teste, a estatística de teste, a distribuição amostral da estatística de teste, o nível de significância adotado e a regra de decisão do teste. 
+
+
+### Hipóteses do Teste
+
+Dada a j-ésima coluna, definamos a  proporção $p_{ij} =$ proporção de casos da $i-$ésima subpopulação que tem variável $Y$ na $j-$ésima categoria. 
+
+**H~0~**: Todas as proporções numa mesma coluna $j$  são iguais $(p_{1j} = p_{2j} =· · · = p_{sj}  = p_{j}  , \forall  j)$.
+
+**H~1~**: Pelo menos uma das proporções $p_{ij}$ é diferente de $p_{j}$ para algum $j$.
+
+
+*ou, equivalentemente,*
+
+
+**H~0~**: A distribuição da Variável $Y$ é homogênea entre as $s$ subpopulações definidas pela variável $X$
+
+**H~1~**: A distribuição da Variável $Y$ não é homogênea entre as subpopulações definidas pela variável $X$
+
+
+
+### Estatística do Teste
+
+Testamos se as freqüências observadas diferem muito das freqüências esperadas, com base na seguinte estatística:
+
+$$Q^2= \sum_{i=1}^s \sum_{j=1}^k \frac{(O_{ij}-E_{ij})^2}{E_{ij}}$$
+Quanto maior o valor de $Q^2$ maior será a probabilidade de as frequências observadas estarem divergindo das freqüências esperadas.
+
+### Distribuição da Estatística do Teste
+
+Sob a hipótese nula, $Q^2$ tem distribuição $\chi^2$ com $d=(k-1).(s-1)$ graus de liberdade.
+
+
+### Regra de Decisão do Teste
+
+Pela estatística de teste: Se $Q^2>\chi^2_{d,\alpha}$, rejeita-se H~0~ para o nível de significância α.
+
+Pelo valor-p:  Se valor-p for menor que o nível de significância α, rejeita-se H~0~ para o nível de significância α. 
+
+
+
+ 
+# Exemplo com Dados Simulados
+
+Em uma escola de Ensino Médio, foi realizada uma pesquisa com 100 alunos para investigar a Área de Conhecimento a ser estudada no futuro de preferência dos alunos. Desejamos conferir se há homogeneidade entre os grupos Feminino e Masculino quanto à Área de Conhecimento de suas preferências.
+
+
+```{r}
+# Carregamento pacotes
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+
+# Gerar dados fictícios
+set.seed(9)
+dados <- data.frame(
+  id = 1:100,
+  sexo = sample(c("Masculino", "Feminino"), 
+                size = 100, 
+                replace = TRUE, 
+                prob = c(0.5, 0.5)),
+  preferencia = sample(c('Exatas', 'Humanas'), 
+                      size = 100, 
+                      replace = TRUE, 
+                      prob = c(0.3, 0.7))
+)
+```
+
+
+
+
+
+## Análise Exploratória
+
+### Visualização dos Dados
+
+```{r}
+ggplot(dados,aes(x = sexo, fill = preferencia)) + 
+  geom_bar(position = "fill") +
+  labs(x = "Sexo", y = "Frequência (%)",fill = "Aréa de Preferência",title = "Distribuição da Área de Preferência do Aluno por Sexo") +
+  scale_y_continuous(labels = scales::percent_format())+
+  theme_minimal(base_size = 14)
+
+```
+
+### Tabela de Contingência com Frequências Observadas
+
+```{r, message=FALSE,warning=FALSE}
+tabela = table(dados$sexo , dados$preferencia)
+names(dimnames(tabela)) <- c("Sexo", "Área de Preferência")
+
+#Criando um tabela incluindo os totais
+
+tabela_com_totais=tabela[c("Masculino","Feminino"),]
+invisible(capture.output(tabela_com_totais <- addmargins(tabela_com_totais, FUN = sum)))
+dimnames(tabela_com_totais)[[1]][length(dimnames(tabela_com_totais)[[1]])] <- "Total"
+dimnames(tabela_com_totais)[[2]][length(dimnames(tabela_com_totais)[[2]])] <- "Total"
+
+kable(tabela_com_totais, caption = "Tabela de Contingência com Frequências Observadas") |> 
+  add_header_above(c("Sexo"=1,"Área de Preferência"=2," "=1)) |> 
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                position = "center",
+                full_width = FALSE)
+
+
+```
+
+## Teste Qui-Quadrado de Homogeneidade
+
+O teste Qui-quadrado de Homogeneidade avalia se a distribuição de uma variável categórica é a mesma através de diferentes populações. 
+
+Neste caso, temos:
+
+**Variável $X$ de Grupo, que define as populações a serem comparadas**: Sexo, com $s=2$ categorias, "Feminino" e "Masculino";
+
+**Variável $Y$ de Resposta**: Área de Preferência, neste caso com $k=2$ categorias, "Exatas" e "Humanas"
+
+**Hipóteses do Teste:**
+
+**H~0~**: A distribuição da Área de Preferência é homogênea entre os grupos definidos pelo Sexo (Feminino e Masculino)
+
+**H~1~**: A distribuição da Área de Preferência não é homogênea entre os grupos definidos pelo Sexo (Feminino e Masculino)
+
+**Nível de significância**: $\alpha = 5\%$
+
+### Aplicação do Teste Qui-Quadrado
+
+```{r}
+
+teste <- chisq.test(tabela)
+teste
+```
+
+### Tabela de Contigência com Frequências Esperadas
+
+```{r}
+esperado <- round(teste$expected, 2)
+
+
+#Gerar tabela de frequência Esperada sob H0 com totais
+
+esperado=esperado[c("Masculino","Feminino"),]
+invisible(capture.output(esperado <- addmargins(esperado, FUN = sum)))
+dimnames(esperado)[[1]][length(dimnames(esperado)[[1]])] = "Total"
+dimnames(esperado)[[2]][length(dimnames(esperado)[[2]])] = "Total"
+
+kable(esperado, align = 'c', caption = "Tabela de Contigência com Frequências Esperadas sob H₀") |> 
+  add_header_above(c("Sexo"=1,"Preferência"=2," "=1)) |> 
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                position = "center",
+                full_width = FALSE)
+
+
+
+```
+
+### Decisão Estatística e Conclusão
+
+Estatística de teste $Q^2=$ `r round(teste$statistic, 3)`
+
+Graus de liberdade $d=(k-1).(s-1)=$ `r teste$parameter`
+
+Valor-p: `r round(teste$p.value, 4)`
+
+`r ifelse(teste$p.value < 0.05, "Como o valor-p é menor que  nível de significância α = 0.05, rejeitamos a hipótese nula. Há evidências de que a distribuição de preferências não é homogênea entre os sexos.", "Como o valor-p é maior que o nivel de significância α = 0.05, não rejeitamos a hipótese nula. Não há evidências suficientes para afirmar que a distribuição da Área de Preferência difere entre as categorias de Sexo.")`
+
+## Considerações Finais 
+
+A análise visual sugere `r ifelse(which.max(abs(teste$residuals[c("Masculino","Feminino"),])) == 1, "maior preferência pela Área de Humanas no grupo Feminino", "padrões similares entre grupos Feminino e Masculino")` e o teste qui-quadrado atestou que as diferenças observadas entre as frequências das Áreas de Preferência dos grupos Feminino e Masculino `r ifelse(teste$p.value < 0.05, "são significativas", "não são sigificativas")` sob o ponto de vista estatístico.
+
+Diante o exposto, recomenda-se `r ifelse(teste$p.value < 0.05, "investigar os fatores que levam a esta diferença.", "ampliar o estudo com mais participantes para confirmar os resultados.")`
+
+</div>
