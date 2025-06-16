@@ -1,0 +1,1763 @@
+---
+title: "PERCEPÇÃO DE SAÚDE NO GARIMPO BOM FUTURO"
+author: "***Guilherme Furtado, Gustavo Belfort, Gustavo Nishijima, Keila Mara, Lucas Ribeiro, Samuel Batistone***"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output: html_document
+
+---
+![](https://est.uff.br/wp-content/uploads/sites/168/2020/05/LogoGET-Azul-fundotransp.png)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Bibliotecas, include=FALSE}
+
+
+library(haven)
+library(naniar)
+library(dplyr)
+library(lubridate)
+library(kableExtra)
+library(knitr)
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+```
+
+```{r BASE DE DADOS, include=FALSE}
+
+df_full = read_sav(file = "banco completo sem variaveis inuteis.sav")
+df_full2 = read_sav(file = "banco completo.sav")
+
+```
+
+<div style="text-align: justify"> 
+
+<br><br>
+
+## **Objetivo**
+O presente estudo tem por objetivo conhecer melhor o perfil sociodemográfico, econômico e de saúde dos moradores da comunidade do Garimpo Bom Futuro (GBF)  e investigar se existem fatores significativamente associados ao estado de Saúde Ruim, autodeclarado por estes moradores. O GBF é localizado no município de Ariquemes, no estado de Rondônia, Brasil, foi descoberto em 1987 e é o maior garimpo a céu aberto do mundo.  Rico em cassiterita, um minério que contém estanho, o GBF já foi, por muito tempo, a principal fonte mundial deste minério. Estima-se que 2.500 pessoas vivam na comunidade do GBF.Dada a grande importância econômica do GBF para Rondônia e para o páis, é imprescindivel que se conheça melhor a sua população, suas necessidades e demandas de saúde. Espera-se que este estudo possa fornecer conhecimento sobre essa população que venha fomentar implementação de projetos e políticas públicas que visem garantir melhores condições de vida e de cuidado da saúde dos moradores desta comunidade. 
+ 
+
+
+## **Metodologia da Análise Estatística**
+
+<p style="text-indent: 40px;">
+Após limpeza e adequação do banco de dados recebido, as variáveis coletadas tiveram suas distribuições sintetizadas em análise descritiva por tabelas e gráficos de distribuições de frequências  e pelo cálculo das estatísticas média e desvio padrão das variáveis quantitativas, para a amostra global e para os subgrupos de interesse definidos pelo Estado de Saúde autodeclarado pelo participante da pesquisa. 
+</p>
+
+<p style="text-indent: 40px;">
+Na análise inferencial, a hipótese da associação de uma variável qualitativa com o de Estado Saúde foi testada através do Teste Qui-Quadrado. Uma vez identificada  associação significativa  entre um fator binário e o Estado de Saúde, o risco do fator foi estimado pela Razão de Chances (OR- Odds Ratio). A significância da Razão de Chances foi avaliada pelo seu intervalo de confiança esimado ao nível de 95%  de confiança. A razão de chances é considerada significativa se seu intervalo de confiança estimado não contém o valor 1,00. 
+</p>
+
+<p style="text-indent: 40px;">
+Na análise inferencial de variáveis quantitativas, a hipótese de normalidade de uma distribuição foi analisada pelo Teste de Shapiro Wilk. Uma vez que as variáveis quantitativas do estudo não apresentaram distribuição normal nos dois grupos de interesse definidos pelo Estado de Saúde, a análise de associação entre uma variável quantitativa e o estado de Saúde foi feita por abordagem não paramétrica, comparando pelo teste de Mann-Whitney as distribuições da variável nos dois subgrupos de interesse definidos pelo Estado de Saúde.   
+</p>
+
+<p style="text-indent: 40px;">
+Variáveis com mais de 50% de dados faltantes não foram consideradas na análise e este relatório não traz detalhes das análisses de grupos de variáveis (variáveis sócio econômicas, fatores de exposição ocupacional, fatores de violênciam variáveis relacionadas aos maus hábitos de tabagismo e etilismo, variáveis específicas de saúde da mulher) que não apresentaram associação significativa com o Estado de Saúde.  Todas as conclusões acerca da análise inferencial foram  realizadas considerando nível de significância máximo de 5% (0,05), ou seja, foi  adotada a seguinte regra de decisão nos testes de significância estatística: rejeição da hipótese nula do teste sempre que o p-valor resultante foi menor que 0,05. As análises dos dados foram realizadas no software R (R Core Team, 2024), versão 4.4.0.
+</p>
+
+<br><br>
+
+## **1. Resultados**
+
+<p style="text-indent: 40px;">
+Os resultados deste estudo são baseados em uma amostra de 348 moradores da Comunidade do Garimpo de Bom Futuro (GBF) que responderam à questão sobre a classificação de seu Estado de Saúde. A Tabela 1 traz a distribuição de frequências das respostas a esta questão e os resultados mostram que **os moradores da Comunidade do GBF tipicamente declaram apresentar Estado de Saúde Bom (71,8%).** A título de comparação, a fim de encontrar fatores que possam estar associados ao Estado de Saúde "Ruim" ou "Muito Ruim", as análises subsequentes considera dois subgrupos de moradores da Comunidade do GBF: o grupo de moradores que não classificaram seu estado de saúde como "Ruim" ou "Muito Ruim", o qual chamaremos de "Grupo com Saúde Boa" (n=321; 92,2%) e o grupo de moradores que classificaram seu estado de saúde como "Ruim" ou "Muito Ruim", o qual chamarems de "Grupo com Saúde Ruim" (n=27; 7,8%).
+</p>
+
+<br>
+
+**Tabela 1: Distribuição de Frequências da Classificação do Estado de Saúde Autodeclarado pelos moradores da Comunidade do GBF.**
+
+```{r TABELA 1, echo=FALSE}
+# Suponha que a variável seja 'q125'
+tabela <- df_full2 %>%
+  count(q125) %>%
+  mutate(
+    freq_abs = n,
+    freq_rel = round(100 * n / sum(n), 1)  # frequência relativa (%)
+  ) %>%
+  select(q125, freq_abs, freq_rel)
+
+
+# Renomeia os rótulos da variável (se precisar)
+tabela$q125 <- factor(tabela$q125,
+                      levels = sort(unique(tabela$q125)),
+                      labels = c("Excelente", "Muito Bom", "Bom", "Ruim", "Muito Ruim"))
+
+# Adiciona linha de total (opcional)
+tabela <- bind_rows(
+  tabela,
+  data.frame(q125 = "Total",
+             freq_abs = sum(tabela$freq_abs),
+             freq_rel = sum(tabela$freq_rel))
+)
+
+# Exibe a tabela formatada
+tabela %>%
+  kable(col.names = c("Autoavaliação da Saúde", "F", "f (%)")) %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+ rm(df_full2)
+
+```
+
+<br>
+
+### 1.1. Perfil Sociodemográfico
+
+<p style="text-indent: 40px;">
+A Tabela 2 traz a distribuição de frequências das variáveis sociodemográficas que caracterizam os participantes do estudo, na amostra total e nos subgrupos de interesse determinados segundo a autodeclararão do estado de saúde. A partir das frequências principais pode-se traçar o seguinte **perfil típico desta amostra total de moradores da Comunidade do Garimpo de Bom Futuro: bem distribuídos quanto ao sexo (50,9% do sexo Feminino e 49,1% do sexo Masculino); adultos, com idade compreendida na faixa etária de 18 a 64 anos (88,5%); autodeclaram-se como pardos (73,6%), são casados ou amasiados (69,0%), com escolaridade maior ou igual a quarta série completa do Ensino Fundamental (63,2%), não são naturais de Rondônia (69,5%), não nasceram no GBF (99,1%) e moram no GBF há mais de 5 anos (55,9%).
+</p>
+
+<p style="text-indent: 40px;">
+As distribuições das variáveis avaliadas na Tabela 2 nos dois subgrupos foram comparadas por testes de significância estatística apropriados e ao avaliar os p-valores resultantes destes testes, verifica-se que **não há diferença significativa entre os dois grupos para as distribuições/classificações do sexo, da faixa etária, da cor da pele, do estado civil, do fator "nascer em Rondônia", do fator "nascer em GBF", do tempo que mora em GBF (p-valores dos testes foram maiores que 5%). Entretanto, o  teste qui-quadrado apontou  diferença significativa entre a distribuição de escolaridade dos dois grupos (p-valor=0,006).Isso mostra que "escolaridade inferior à 4ª série EF" é um fator de risco significativamente associado ao Estado de Saúde Ruim.** De fato,  observa-se que, enquanto no grupo com Saúde Ruim há uma concentração de 63,0% dos moradores com escolaridade inferior à 4ª série EF, no grupo com Saúde Boa, somente 34,6% dos moradores estão neste nível de escolaridade mais baixo. 
+</p>
+
+<br>
+  **Tabela 2: Distribuição de frequências das variáveis que caracterizam os profissionais, na amostra global e nos subgrupos determinados segundo a autodeclararão do estado de saúde.**
+  
+```{r include=FALSE}
+
+
+#tratamento da base para por rotulo nas variaveis
+df_com_label <- df_full %>%
+  mutate(Sexo = recode(Sexo,
+                       `1` = "Masculino",
+                       `2` = "Feminino"),
+         FaixaEtaria = recode(FaixaEtaria,
+                              `1` = "1. 15 a 17 anos",
+                              `2` = "2. 18 a 64 anos" ,
+                              `3` = "3. 65 a 81 anos" ),
+         Grupo = recode(Grupo,
+                        `2` = "Saúde Boa",
+                        `1` = "Saúde Ruim"),
+         Cor = recode(Cor,
+                      `1` = "Branca",
+                      `2` = "Negra" ,
+                      `3` = "Parda" ),
+         EstadoCivil = recode(EstadoCivil,
+                              `1` = "1.Solteiro",
+                              `2` = "2.Casado/Amasiado" ,
+                              `3` = "3.Viúvo",
+                              `4` = "4.Separado/Divorciado"),
+         CasadoOuAmasiado = recode(CasadoOuAmasiado,
+                                   `0` = "Não",
+                                   `1` = "Sim"),
+         
+         EscolaridadeMenorQuartaEf = recode(EscolaridadeMenorQuartaEf,
+                               `1` = "1. Inferior à 4ª série EF",
+                               `2` = "2. ≥ 4ª série EF" ),
+         NasceuEmRondonia = recode(NasceuEmRondonia,
+                                   `1` = "Sim",
+                                   `2` = "Não" ),
+         NasceuEmGBF = recode(NasceuEmGBF,
+                              `0` = "Não",
+                              `1` = "Sim"),
+         TempoEmGBF = recode(TempoEmGBF,
+                             `1` = "1. Menos de 1 ano",
+                             `2` = "2. De 1 ano a 5 anos",
+                             `3` = "3. Mais de 5 anos")
+         
+  )
+
+#selecionando as variaveis q vao entrar nao tabela
+variaveis_qualitativas = c("Sexo",
+                           "FaixaEtaria",
+                           "Cor",
+                           "EstadoCivil",
+                           "CasadoOuAmasiado",
+                           "EscolaridadeMenorQuartaEf",
+                           "NasceuEmRondonia",
+                           "NasceuEmGBF",
+                           "TempoEmGBF"
+)
+```
+
+
+```{r  include=FALSE}
+
+# função para resumir uma variável
+
+resumo_variavel <- function(var_nome, df, var_resposta = "Grupo") {
+  tab <- table(df[[var_nome]], df[[var_resposta]])
+  p_valor_calc <- suppressWarnings(chisq.test(tab)$p.value)
+  
+  data.frame(
+    Variável = var_nome,
+    Categoria = rownames(tab),
+    F_Total  = rowSums(tab),
+    f_Total  = paste0(round(rowSums(tab) / sum(tab) * 100, 1), "%"),
+    F_SaudeBoa = tab[, 1],
+    f_SaudeBoa = paste0(round(tab[, 1] / sum(tab[, 1]) * 100, 1), "%"),
+    F_SaudeRuim = tab[, 2],
+    f_SaudeRuim = paste0(round(tab[, 2] / sum(tab[, 2]) * 100, 1), "%"),
+    p_valor = p_valor_calc,
+    row.names = NULL
+  )
+}
+
+# Gerar tabela
+tabelao <- lapply(variaveis_qualitativas, function(v) resumo_variavel(v, df_com_label)) %>%
+  bind_rows()
+
+# FORMATAÇÃO DO P-VALOR
+tabelao <- tabelao %>%
+  mutate(
+    P_valor = case_when(
+      p_valor < 0.001 ~ cell_spec("< 0.001", color = "red"),
+      p_valor < 0.05  ~ cell_spec(sprintf("%.3f", p_valor), color = "red"),
+      TRUE            ~ sprintf("%.3f", p_valor)
+    )
+  ) %>%
+  select(-p_valor) # Remove o p_valor antigo corretamente
+
+# Mostrar a tabela bonitinha
+tabelao %>%
+    kable(escape = FALSE, row.names = FALSE, format = "html") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3")
+```
+
+
+
+```{r echo=FALSE}
+tabelao %>% 
+  kable(row.names = FALSE)
+```
+
+
+
+<p style="text-indent: 40px;">
+  A Tabela 3 traz as principais estatísticas das variáveis quantitativas de caracterização sociodemográfica (Idade e Tempo que vive no GBF, em anos), na amostra global e nos grupos determinados segundo a autodeclararão do estado de saúde.Em termos médios, no global, o morador da comunidade do GBF participante deste estudo tem 35,2 anos de idade e mora há 8,6 anos na comunidade GBF.  As distribuições dos dois grupos determinados pelo Estado de Saúde foram comparadas pelo teste de Mann-Whitney que não acusou diferença significativa entre os grupos (p-valores maiores que 5%). Logo, **não há associação significativa entre o Estado de Saúde Ruim e a Idade. O Estado de Saúde Ruim também não é significativamente associado ao tempo que o participante vive no GBF.**
+</p> 
+  
+<br>
+  **Tabela 3: Principais estatísticas Média (Desvio Padrão) das variáveis sociodemográficas quantitativas (medidas em anos), na amostra global e nos subgrupos determinados segundo a autodeclaração do Estado de Saúde **
+  
+
+```{r include=FALSE}
+
+# Calcular estatísticas por grupo
+tabela_stats <- df_full %>%
+  filter(
+    !is.na(Grupo),
+    !is.na(Idade),
+    !is.na(TempoEmBFTotalEmdias)
+  ) %>%
+  mutate(Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) %>%
+  group_by(Grupo) %>%
+  summarise(
+    Idade = paste0(round(mean(Idade, na.rm = TRUE), 1), " (", round(sd(Idade, na.rm = TRUE), 1), ")"),
+    Tempo_no_GBF = paste0(round(mean(TempoEmBFTotalEmdias, na.rm = TRUE) / 365, 1), " (", round(sd(TempoEmBFTotalEmdias, na.rm = TRUE) / 365, 1), ")")
+  )
+
+# Calcular estatísticas totais
+total_stats <- df_full %>%
+  filter(
+    !is.na(Grupo),
+    !is.na(Idade),
+    !is.na(TempoEmBFTotalEmdias)
+  ) %>%
+  summarise(
+    Grupo = "Total",
+    Idade = paste0(round(mean(Idade, na.rm = TRUE), 1), " (", round(sd(Idade, na.rm = TRUE), 1), ")"),
+    Tempo_no_GBF = paste0(round(mean(TempoEmBFTotalEmdias, na.rm = TRUE) / 365, 1), " (", round(sd(TempoEmBFTotalEmdias, na.rm = TRUE) / 365, 1), ")")
+  )
+
+#Adicinando p-valores do teste de Mann-Whitney
+teste1= wilcox.test(Idade~Grupo,df_full)
+teste2=wilcox.test(TempoEmBFTotalEmdias~Grupo, df_full)
+LastRow= c("p-valor do teste de Mann-Whitney comparando os dois grupos", round(teste1$p.value,3), round(teste2$p.value,3))
+
+# Combinar as tabelas
+tabela_stats_com_total <- rbind (tabela_stats, total_stats, LastRow)
+
+# Exibir a tabela formatada
+tabela_stats_com_total %>%
+  kable(escape = FALSE, row.names = FALSE, format = "html", align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3")
+```
+
+
+```{r echo=FALSE}
+tabela_stats_com_total %>% 
+kable(row.names = FALSE)
+
+```
+<br><br>
+
+### 1.3.	Perfil Socioeconômico 
+
+Quanto ao perfil s´cio econômico a partir de análise similar a análise feita para o perfil sociodemgráfico,  pôdde-se traçar o seguinte perfil socioeconômico típico desta amostra total de moradores da Comunidade do GBF: trabalham por conta própria (50,6%);  estão há 4 anos ou mais em atividade no garimpo (56,1%); trabalham diariamente por um período  maior ou igual a 6 horas e menor que 9 horas (54,8%); têm salário menor que 1000 reais (61,6%) e não têm complemento de renda (87,8%). Em termos medianos, o participante da pesquisa tinha 5,0 anos de atividade no garimpo, trabalhava por 8 horas diárias e tinham renda de 700 reais. 
+
+As distribuições das variáveis sócioeconômicas nos dois subgrupos foram comparadas por testes de significância estatística apropriados e ao avaliar os p-valores resultantes destes testes, verificou-se que  não há diferença significativa entre os dois grupos para as distribuições   do tempo de atividade, horas diárias de trabalho e renda (todos os p-valores dos testes de Mann-Whitney foram maiores que 5%). Também não foram significativamente distintas as diferenças observadas entre as proporções de pessoas que tem complemento de renda dos dois grupos (p-valor = 0,701 do teste Exato de Fisher).  Logo, nenhuma variável ou fator sócio econômico avaliado na pesquisa se mostrou significativamente associado ao Estado de Saúde Ruim
+
+### 1.4. Análise dos Fatores de Exposição Ocupacional
+
+A  análise da associação entre Fatores de Exposição Ocupacional  e a autodeclaração do estado de saúde dos moradores da Comunidade do GBF, identificou, a A partir dos p-valores obtidos pelos testes de significância estatística, todos maiores que 5%, que o estado de saúde “Ruim” não é significativamente associado às exposições à Fumaça/Poeira/Agroóxico, nem à exposição de Produto Químico, nem à Exposição ao Sol,  nem às demais variáveis investigadas tangentes à essas exposições (horas de exposição por semana, tempo de exposição, tipo de produto exposto, tipo de lugar que trabalhava, se o lugar tinha ventilação, uso de EPI e uso de proteção solar).  Em termos medianos, o participante da pesquisa ficava 4,0 horas por semana expostos aos fatores citados, por um período de 4,0 anos, e ficavam 8,0 horas expostos ao sol nas suas atividades laborais. As distribuições destass variáveis nos dois subgrupos foram comparadas pelo teste de Mann-Whitney que não acusou diferença significativa entre os grupos (p-valores maiores que 5%).
+
+
+### 1.5.Análise dos fatores de violência
+
+Na análise da associação do Fatores de Violência e a autodeclaração do estado de saúde dos moradores da Comunidade do GBF, a  partir dos p-valores obtidos pelos testes de significância estatística, todos maiores que 5%, concluiu-se que o estado Ruim não é significativamente associado aos fatores de violência investigados. 
+
+### 1.6.Análise dos Maus hábitos
+
+A análise da associação dos maus hábitos referente ao Tabagismo e Etilismo com a autodeclaração do estado de saúde dos moradores da Comunidade do GB, identificou, a partir dos p-valores, todos maiores que 5%, cncluiu-sese que o estado Ruim de Saúde não é significativamente associado ao Tabagismo e Etilismo; nem à estas variáveis quantitativas avaliadas para os fumantes: cigarros fumados por dia e idade que começou a fumar diariamente. Em termos medianos, os moradores da Comunidade do GBF fumantes consomem, 15 cigarros por dia e começaram a fumar aos 16 anos. 
+
+
+### 1.7.Análise dos Fatores de Saúde da Mulher
+
+Na aanálise da associação dos fatores específicos de Saúde da mulhercom a autodeclaração do estado de saúde das moradoras da Comunidade do GBF. Os testes realizados cncluiram que o estado Ruim ou Muito Ruim de Saúde da mulher não é significativamente associado à nenhum dos fatores de Saúde da Mulher avaliados, nem à estas variáveis quantitativas relacionadas avaliadas para as mulheres:  quantidade de gravidezes, número de filhos e quantidade de abortos. CEm termos medianos, as mulheres da Comunidade do GBF tinham tido, 3 gravidezes e 3 filhos. 
+
+### 1.8.Análise de Sintomas, Comorbidades, Dores e Sentimentos
+
+<p style="text-indent: 40px;">
+A Tabela 4 traz a análise da associação Sintomas e Comorbidades com a autodeclaração do estado de saúde dos moradores da Comunidade do GBF. A partir dos p-valores menores  que 5%, conclui-se que o estado de saúde “Ruim” ou “Muito Ruim” é significativamente associado aos seguintes sintomas e/ou comorbidades: Febre, Diarreia, Vômitos, Doença que acompanha por muito tempo, Doença da coluna, Tendinite, Micose, Depressão, Rins, Hepatite B, Doença de nervos, Pancada forte no peito, Pancada forte na cabeça, Tosse pela manhã, Tosse no Resto do Dia, Dificuldade de Andar, Escarro com Sangue e Adoecer Facilmente.  Estes Sintomas e Comorbidades são significativamente mais frequentes no grupo de moradores da Comunidade do GBF que têm Estado de Saúde Ruim.
+</p>
+
+
+**Tabela 4: Análise da associação Sintomas e Comorbidades com a autodeclaração do estado de saúde dos moradores da Comunidade do GBF.**
+
+```{r include=FALSE}
+
+#tratamento da base para por rotulo nas variaveis
+
+df_com_label <- df_full %>%
+  mutate(
+    Obesidade = recode(Obesidade, `1` = "Sim", `2` = "Não"),
+    Grupo = recode(Grupo, `2` = "Saúde Boa", `1` = "Saúde Ruim"),
+    Febre = recode(Febre, `1` = "Sim", `2` = "Não"),
+    Diarreia = recode(Diarreia, `1` = "Sim", `2` = "Não"),
+    Vomitos = recode(Vomitos, `1` = "Sim", `2` = "Não"),
+    TomaRemedio = recode(TomaRemedio, `1` = "Sim", `2` = "Não"),
+    TemDoençaMuitoTempo = recode(TemDoençaMuitoTempo, `1` = "Sim", `2` = "Não"),
+    DoencaImpedeAtividades = recode(DoencaImpedeAtividades, `1` = "Sim", `2` = "Não"),
+    Coluna = recode(Coluna, `1` = "Sim", `2` = "Não"),
+    Artrite = recode(Artrite, `1` = "Sim", `2` = "Não"),
+    DoençaTendinite = recode(DoençaTendinite, `1` = "Sim", `2` = "Não"),
+    DoençaCoração = recode(DoençaCoração, `1` = "Sim", `2` = "Não"),
+    DoençaMicose = recode(DoençaMicose, `1` = "Sim", `2` = "Não"),
+    DoençaLeishmaniose = recode(DoençaLeishmaniose, `1` = "Sim", `2` = "Não"),
+    Derrame = recode(Derrame, `1` = "Sim", `2` = "Não"),
+    Depressão = recode(Depressão, `1` = "Sim", `2` = "Não"),
+    DoençaEnfisema = recode(DoençaEnfisema, `1` = "Sim", `2` = "Não"),
+    Bronquite = recode(Bronquite, `1` = "Sim", `2` = "Não"),
+    Asma = recode(Asma, `1` = "Sim", `2` = "Não"),
+    Renal = recode(Renal, `1` = "Sim", `2` = "Não"),
+    Cirrose = recode(Cirrose, `1` = "Sim", `2` = "Não"),
+    HepatiteB = recode(HepatiteB, `1` = "Sim", `2` = "Não"),
+    HepatiteC = recode(HepatiteC, `1` = "Sim", `2` = "Não"),
+    Sifilis = recode(Sifilis, `1` = "Sim", `2` = "Não"),
+    Malaria = recode(Malaria, `1` = "Sim", `2` = "Não"),
+    Dengue = recode(Dengue, `1` = "Sim", `2` = "Não"),
+    Nervos = recode(Nervos, `1` = "Sim", `2` = "Não"),
+    Verme = recode(Verme, `1` = "Sim", `2` = "Não"),
+    Toxoplasmose = recode(Toxoplasmose, `1` = "Sim", `2` = "Não"),
+    FebreAmarela = recode(FebreAmarela, `1` = "Sim", `2` = "Não"),
+    Hanseaniese = recode(Hanseaniese, `1` = "Sim", `2` = "Não"),
+    PancadaFortePeito = recode(PancadaFortePeito, `1` = "Sim", `2` = "Não"),
+    PancadaForteCabeça = recode(PancadaForteCabeça, `1` = "Sim", `2` = "Não"),
+    TosseManhã = recode(TosseManhã, `1` = "Sim", `2` = "Não"),
+    TosseDia = recode(TosseDia, `1` = "Sim", `2` = "Não"),
+    CatarroManhã = recode(CatarroManhã, `1` = "Sim", `2` = "Não"),
+    CatarroDia = recode(CatarroDia, `1` = "Sim", `2` = "Não"),
+    Chiado = recode(Chiado, `1` = "Sim", `2` = "Não"),
+    CriseFaltaDeAr = recode(CriseFaltaDeAr, `1` = "Sim", `2` = "Não"),
+    DifAndar = recode(DifAndar, `1` = "Sim", `2` = "Não"),
+    FaltaDEArAoAndarDepressa = recode(FaltaDEArAoAndarDepressa, `1` = "Sim", `2` = "Não"),
+    FaltaDeArAndandoComPessoas = recode(FaltaDeArAndandoComPessoas, `1` = "Sim", `2` = "Não"),
+    PrecisaTomarFolegocaminhando = recode(PrecisaTomarFolegocaminhando, `1` = "Sim", `2` = "Não"),
+    Tuberculose = recode(Tuberculose, `1` = "Sim", `2` = "Não"),
+    ManchaNoPulmão = recode(ManchaNoPulmão, `1` = "Sim", `2` = "Não"),
+    Escarro = recode(Escarro, `1` = "Sim", `2` = "Não"),
+    HAS = recode(HAS, `1` = "Sim", `2` = "Não"),
+    ColesterolAlto = recode(ColesterolAlto, `1` = "Sim", `2` = "Não"),
+    DM = recode(DM, `1` = "Sim", `2` = "Não"),
+    Cancer = recode(Cancer, `1` = "Sim", `2` = "Não"),
+    AdoeceFacil = recode(AdoeceFacil, `1` = "Sim", `2` = "Não")
+  )
+
+# Selecionando as variáveis que vão entrar na tabela
+variaveis_qualitativas <- c(
+  "Obesidade", "Febre", "Diarreia", "Vomitos", "TomaRemedio",
+  "TemDoençaMuitoTempo", "DoencaImpedeAtividades", "Coluna", "Artrite", "DoençaTendinite",
+  "DoençaCoração", "DoençaMicose", "DoençaLeishmaniose", "Derrame", "Depressão",
+  "DoençaEnfisema", "Bronquite", "Asma", "Renal", "Cirrose", "HepatiteB",
+  "HepatiteC", "Sifilis", "Malaria", "Dengue", "Nervos", "Verme",
+  "Toxoplasmose", "FebreAmarela", "Hanseaniese", "PancadaFortePeito",
+  "PancadaForteCabeça", "TosseManhã", "TosseDia", "CatarroManhã",
+  "CatarroDia", "Chiado", "CriseFaltaDeAr", "DifAndar", "FaltaDEArAoAndarDepressa",
+  "FaltaDeArAndandoComPessoas", "PrecisaTomarFolegocaminhando",
+  "Tuberculose", "ManchaNoPulmão", "Escarro", "HAS",
+  "ColesterolAlto", "DM", "Cancer", "AdoeceFacil"
+)
+```
+
+
+```{r  include=FALSE}
+
+# função para resumir uma variável
+
+resumo_variavel <- function(var_nome, df, var_resposta = "Grupo") {
+  tab <- table(df[[var_nome]], df[[var_resposta]])
+  p_valor_calc <- suppressWarnings(chisq.test(tab)$p.value)
+  
+  data.frame(
+    Variável = var_nome,
+    Categoria = rownames(tab),
+    F_Total  = rowSums(tab),
+    f_Total  = paste0(round(rowSums(tab) / sum(tab) * 100, 1), "%"),
+    F_SaudeBoa = tab[, 1],
+    f_SaudeBoa = paste0(round(tab[, 1] / sum(tab[, 1]) * 100, 1), "%"),
+    F_SaudeRuim = tab[, 2],
+    f_SaudeRuim = paste0(round(tab[, 2] / sum(tab[, 2]) * 100, 1), "%"),
+    p_valor = p_valor_calc,
+    row.names = NULL
+  )
+}
+
+# Gerar tabela
+tabelao3 <- lapply(variaveis_qualitativas, function(v) resumo_variavel(v, df_com_label)) %>%
+  bind_rows()
+
+# FORMATAÇÃO DO P-VALOR
+tabelao3 <- tabelao3 %>%
+  mutate(
+    P_valor = case_when(
+      p_valor < 0.001 ~ cell_spec("< 0.001", color = "red"),
+      p_valor < 0.05  ~ cell_spec(sprintf("%.3f", p_valor), color = "red"),
+      TRUE            ~ sprintf("%.3f", p_valor)
+    )
+  ) %>%
+  select(-p_valor) # Remove o p_valor antigo corretamente
+
+# Mostrar a tabela bonitinha
+tabelao3 %>%
+    kable(escape = FALSE, row.names = FALSE, format = "html") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3")
+```
+
+
+
+```{r echo=FALSE}
+tabelao3 %>% 
+  kable(row.names = FALSE)
+```
+
+
+
+<p style="text-indent: 40px;">
+A Tabela 5 traz a distribuição de frequências da escala de intensidade da dor em partes específicas do corpo, na amostra total e nos subgrupos de interesse determinados segundo a autodeclaração do estado de saúde.  Dada a natureza ordinal da escala de intensidade da dor utilizada, as distribuições dos dois grupos foram comparadas pelo teste não paramétrico de Mann-Whitney, cujos resultados são exibidos na Tabela 6.  O teste acusou diferença significativa entre os dois grupos para as distribuições de intensidade de dor na nuca, no ombro esquerdo, na parte inferior das costas e  nas pernas. Comparando as distribuições  dessas variáveis nos dois grupos, exibidas na Tabela 5, observa-se maior concentração de pessoas com dores de nível moderada, grave ou muita grave  nestas partes do corpo no grupo de moradores da Comunidade do GBF que tem Estado de Saúde Ruim.Para a dor nas Coxas, o este retornou "NaN" uma vez que a variável apresentou a mesma resposta para tdos os respondentes de ambos os grupos.  
+</p>
+
+
+**Tabela 5: Análise da associação da Intensidade de Dor em Partes Específicas do Corpo com o Estado de saúde dos moradores da Comunidade do GBF.**
+
+```{r include=FALSE}
+# Tratamento da base para colocar rótulo nas variáveis
+df_com_label <- df_full %>%
+  mutate(
+    nuca = recode(nuca,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+    ombro_esq = recode(ombro_esq,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+    ombro_dir = recode(ombro_dir,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+  braço_esq= recode(braço_esq,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+  braço_dir= recode(braço_dir,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+  alto_costas= recode(alto_costas,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+  mão_esq = recode(mão_esq,
+                  `1` = "1.Sem dor",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+  mão_dir = recode(mão_dir,
+                  `1` = "1.Sem dor",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+baixo_costas = recode(baixo_costas,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+nádegas = recode(nádegas,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+coxas = recode(coxas,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+joelhos = recode(joelhos,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+pernas = recode(pernas,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+                 
+pés= recode(pés,
+                  `1` = "1.Sem dor",
+                  `2` = "2.Dor Muito Leve",
+                  `3` = "3.Dor Leve",
+                  `4` = "4.Dor Moderada",
+                  `5` = "5. Dor Grave",
+                  `6` = "6. Dor Muito Grave"),
+Grupo = recode(Grupo,
+                   `2` = "Saúde Boa",
+                   `1` = "Saúde Ruim")
+  )
+
+variaveis_qualitativas <- c("nuca", "ombro_esq", "ombro_dir", "braço_esq", "braço_dir", "alto_costas", "mão_esq", "mão_dir", "baixo_costas", "nádegas", "coxas", "joelhos", "pernas", "pés")
+```
+
+```{r include=FALSE} 
+
+# Função para resumir uma variável
+resumo_variavel <- function(var_nome, df, var_resposta = "Grupo") {
+  
+  tab <- table(df[[var_nome]], df[[var_resposta]])
+ 
+    resultado <- data.frame(
+    ParteDoCorpo = var_nome,
+    Categoria = rownames(tab),
+    F_Total = rowSums(tab),
+    f_Total = paste0(round(rowSums(tab) / sum(tab) * 100, 1), "%"),
+    F_SaudeBoa = tab[, "Saúde Boa"],
+    f_SaudeBoa = paste0(round(tab[, "Saúde Boa"] / sum(tab[, "Saúde Boa"]) * 100, 1), "%"),
+    F_SaudeRuim = tab[, "Saúde Ruim"],
+    f_SaudeRuim = paste0(round(tab[, "Saúde Ruim"] / sum(tab[, "Saúde Ruim"]) * 100, 1), "%"),
+    row.names = NULL
+  )
+  
+  return(resultado)
+}
+
+# Aplicando a função para todas as variáveis
+tabelao2 <- lapply(variaveis_qualitativas, function(v) resumo_variavel(v, df_com_label)) %>%
+bind_rows()
+
+# Mostrar a tabela bonitinha sem coluna em branco
+tabelao2 %>%
+  kable(escape = FALSE, row.names = FALSE, format = "html")%>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3")
+```
+
+```{r echo=FALSE}
+tabelao2 %>% 
+  kable(row.names = FALSE)
+```
+**Tabela 6: P-valores dos testes de Mann-Whitney comparando as distribuições de intensidade de dor em  partes específicas do corpo nos grupos definidos pelo Estado de Saúde do morador do GBF**
+
+```{r include=FALSE}
+# Função para calcular e formatar o valor-p do teste de Mann-Whitney
+mann_whitney_pvalor <- function(x, y) {
+ 
+  # Remove casos com valores ausentes
+  dados <- data.frame(x = x, y = y)
+  dados <- na.omit(dados)
+  
+  # Realiza o teste de Mann-Whitney
+  resultado <- wilcox.test(x ~ y, data = df_full , exact = FALSE)
+  
+  # Obtém o valor-p
+  p_valor <- resultado$p.value
+  
+  # Formata o valor-p conforme especificado
+  p_valor_formatado <- dplyr::case_when(
+    p_valor < 0.001 ~ kableExtra::cell_spec("< 0.001", color = "red"),
+    p_valor < 0.05  ~ kableExtra::cell_spec(sprintf("%.3f", p_valor), color = "red"),
+    TRUE            ~ sprintf("%.3f", p_valor)
+  )
+  
+  return(p_valor_formatado)
+}
+
+variaveis <- c(
+  "nuca", "ombro_esq", "ombro_dir", "braço_esq", "braço_dir",
+  "alto_costas", "mão_esq", "mão_dir", "baixo_costas", 
+  "nádegas", "coxas", "joelhos", "pernas", "pés"
+)
+
+# Aplicando a função para cada variável
+Coluna_p <- c(
+  mann_whitney_pvalor(df_full$nuca, df_full$Grupo),
+  mann_whitney_pvalor(df_full$ombro_esq, df_full$Grupo),
+  mann_whitney_pvalor(df_full$ombro_dir, df_full$Grupo),
+  mann_whitney_pvalor(df_full$braço_esq, df_full$Grupo),
+  mann_whitney_pvalor(df_full$braço_dir, df_full$Grupo),
+  mann_whitney_pvalor(df_full$alto_costas, df_full$Grupo),
+  mann_whitney_pvalor(df_full$mão_esq, df_full$Grupo),
+  mann_whitney_pvalor(df_full$mão_dir, df_full$Grupo),
+  mann_whitney_pvalor(df_full$baixo_costas, df_full$Grupo),
+  mann_whitney_pvalor(df_full$nádegas, df_full$Grupo),
+  mann_whitney_pvalor(df_full$coxas, df_full$Grupo),
+  mann_whitney_pvalor(df_full$joelhos, df_full$Grupo),
+  mann_whitney_pvalor(df_full$pernas, df_full$Grupo),
+  mann_whitney_pvalor(df_full$pés, df_full$Grupo)
+)
+
+# Criando a tabela final
+tabela_p <- data.frame(Variável = variaveis, `Valor-p` = Coluna_p)
+colnames(tabela_p) <- c("Parte do Corpo", "p-valor (teste Mann-Whitney)")
+
+tabela_p %>%
+  knitr::kable("html", escape = FALSE, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14) %>%
+   column_spec(2, width = "8em") # ajusta a largura da 2ª coluna
+```
+
+```{r echo=FALSE}
+tabela_p %>% 
+  kable(row.names = FALSE)
+```
+
+<br>
+
+<p style="text-indent: 40px;">
+A Tabela 7 traz a distribuição de frequências das escalas de Sentimentos dos participantes do estudo, na amostra total e nos subgrupos de interesse determinados segundo a autodeclaração do estado de saúde.  Dada a natureza ordinal da escala, as distribuições dos dois grupos foram comparadas pelo teste não paramétrico de Mann-Whitney cujos p-valores são exibidos na Tabela 8. O teste acusou diferença significativa entre os dois grupos para as distribuições de todos os sentimentos, “Estar Cheio de energia”, “Nervosismo”, “Depressão”, “Calma”, “Desânimo”, “Esgotamento”, “Felicidade” e “Cansaço”. Comparando as distribuições nos dois grupos, observa-se que: 
+</p>
+
+i) há maior concentração de pessoas que tem nervosismo, depressão, esgotamento e cansaço  mais frequentemente no grupo que tem Estado de Saúde Ruim.
+
+ii) há maior concentração de pessoas  que tem os sentimentos “Cheio de energia”, “Calma” e “Felicidade” mais frequentementes no grupo de moradores da Comunidade do GBF que tem Estado de Saúde Boa.
+
+<br>
+**Tabela 7: Análise da associação da Frequência de Sentimentos com a autodeclaração do estado de saúde dos moradores da Comunidade do GBF**
+```{r include=FALSE}
+# Tratamento da base para colocar rótulo nas variáveis
+df_com_label <- df_full %>%
+  mutate(
+    CheioDeEnergia = recode(CheioDeEnergia,
+                  `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+    Nervoso = recode(Nervoso,
+                   `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+    Deprimido = recode(Deprimido,
+                  `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+  Calmo= recode(Calmo,
+                  `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+   Desanimado= recode(Desanimado,
+                  `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+  Esgotado= recode(Esgotado,
+                  `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+  Feliz = recode(Feliz,
+                 `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+  Cansado = recode(Cansado,
+                  `1` = "1. Não",
+                  `2` = "2. Sim, poucas vezes",
+                  `3` = "3. Sim, às vezes",
+                  `4` = "4. Sim, a maior parte do tempo",
+                  `5` = "5. Sim, sempre"),
+Grupo = recode(Grupo,
+                   `2` = "Saúde Boa",
+                   `1` = "Saúde Ruim")
+  )
+
+variaveis_qualitativas <- c("CheioDeEnergia", "Nervoso", "Deprimido", "Calmo", "Desanimado", "Esgotado", "Feliz", "Cansado")
+```
+
+```{r include=FALSE} 
+
+# Função para resumir uma variável
+resumo_variavel <- function(var_nome, df, var_resposta = "Grupo") {
+  
+  tab <- table(df[[var_nome]], df[[var_resposta]])
+  
+  resultado <- data.frame(
+    Sentimento = var_nome,
+    Categoria = rownames(tab),
+    F_Total = rowSums(tab),
+    f_Total = paste0(round(rowSums(tab) / sum(tab) * 100, 1), "%"),
+    F_SaudeBoa = tab[, "Saúde Boa"],
+    f_SaudeBoa = paste0(round(tab[, "Saúde Boa"] / sum(tab[, "Saúde Boa"]) * 100, 1), "%"),
+    F_SaudeRuim = tab[, "Saúde Ruim"],
+    f_SaudeRuim = paste0(round(tab[, "Saúde Ruim"] / sum(tab[, "Saúde Ruim"]) * 100, 1), "%"),
+    row.names = NULL
+  )
+  
+  return(resultado)
+}
+
+# Aplicando a função para todas as variáveis
+tabelao3 <- lapply(variaveis_qualitativas, function(v) resumo_variavel(v, df_com_label)) %>%
+bind_rows()
+
+
+# Mostrar a tabela 
+tabelao3 %>%
+  kable(escape = FALSE, row.names = FALSE, format = "html")%>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3")
+```
+
+```{r echo=FALSE}
+tabelao3 %>% 
+  kable(row.names = FALSE)
+```
+**Tabela 8: P-valores dos testes de Mann-Whitney comparando as distribuições de frequência do sentimento  nos grupos definidos pelo Estado de Saúde do morador do GBF**
+
+```{r include=FALSE}
+# Função para calcular e formatar o valor-p do teste de Mann-Whitney
+mann_whitney_pvalor <- function(x, y) {
+ 
+  # Remove casos com valores ausentes
+  dados <- data.frame(x = x, y = y)
+  dados <- na.omit(dados)
+  
+  # Realiza o teste de Mann-Whitney
+  resultado <- wilcox.test(x ~ y, data = df_full , exact = FALSE)
+  
+  # Obtém o valor-p
+  p_valor <- resultado$p.value
+  
+  # Formata o valor-p conforme especificado
+  p_valor_formatado <- dplyr::case_when(
+    p_valor < 0.001 ~ kableExtra::cell_spec("< 0.001", color = "red"),
+    p_valor < 0.05  ~ kableExtra::cell_spec(sprintf("%.3f", p_valor), color = "red"),
+    TRUE            ~ sprintf("%.3f", p_valor)
+  )
+  
+  return(p_valor_formatado)
+}
+
+variaveis <- c("CheioDeEnergia", "Nervoso", "Deprimido", "Calmo", "Desanimado", "Esgotado", "Feliz", "Cansado")
+
+
+# Aplicando a função para cada variável
+Coluna_p <- c(
+  mann_whitney_pvalor(df_full$CheioDeEnergia, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Nervoso, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Deprimido, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Calmo, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Desanimado, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Esgotado, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Feliz, df_full$Grupo),
+  mann_whitney_pvalor(df_full$Cansado, df_full$Grupo)
+  )
+
+# Criando a tabela final
+tabela_p2 <- data.frame(Variável = variaveis, `Valor-p` = Coluna_p)
+colnames(tabela_p2) <- c("Sentimento", "p-valor (teste Mann-Whitney)")
+
+tabela_p2 %>%
+  knitr::kable("html", escape = FALSE, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14) %>%
+   column_spec(2, width = "8em") # ajusta a largura da 2ª coluna
+```
+
+```{r echo=FALSE}
+tabela_p2 %>% 
+  kable(row.names = FALSE)
+```
+
+
+
+
+## **2. Análise do Fatores de Risco Significativamente Associados ao Estado de Saúde Ruim**
+
+<p style="text-indent: 40px;">
+As anláises anteriores indicaram os seguintes fatores associados ao Estado de Saúde Ruim do morador do GBF: Escolaridade inferior à quarta série do Ensino Fundamental, Febre, Diarréia, Vômitos, Doença que tem há muito tempo, Doença da Coluna, Tendinite, Micose, Depressão, Doença de Rins, Hepatite B, Doença de Nervo, Pancada forte no Peito, Pancada Forte na Cabeça, Tosse pela manhã, Tosse o resto do dia,  Dificuldade de Andar, Escarro com Sangue, Adoecer Facilmente. A Tabela 9 faz a análise destes fatores de risco com a estimativa da medida de risco razão de chances e análise da significância dessa medida através do seu Intervalo de Confiança. Os resultados mostram que enquanto no grupo que não tem escolaridade inferior à quarta série do EF, ou seja, no grupo que os moradores têm Escolaridade maior ou igual à quarta série, 4,6% declararam estado de saúde rRuim, no  grupo que  tem escolaridade inferior à quarta série do EF, 13,4% declararam estado de saúde Ruim. A diferença entre tais proporções é significativa sob ponto de vista estatístico (p-valor=0,006 do teste Qui-quadrado). A razão de chances é 3,2 e é significativa já que seu Intervalo de confiança, ao nível de 95% de confiança, não possui o valor 1,0. Estima-se daí que **a chance de um morador de GBF que tem escolaridade inferior à quarta série do EF declarar Estado de Saúde Ruim é 3,2 vezes a chance de um morador de GBF que tem escolaridade maior ou igual à quarta série do EF declarar Estado de Saúde Ruim.** Interpretações  equivalentes a essa podem ser feitas para os demais fatores de risco encontrados, a partir das estatísticas exibidas na Tabela 9.
+</p>
+<br>
+**Tabela 9:  Frequências Relativas (%) do Estado de Saúde Ruim na Ausência e Presença do Fator de Risco e Estimativas pontual e Intervalar do Risco para os Fatores Significativamente Associados ao Estado de Saúde Ruim**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+
+# Base de dados
+dados <- df_full %>%
+  clean_names()
+
+# Lista dos fatores (agora todos em minúsculo!)
+fatores <- c(
+  "escolaridade_menor_quarta_ef", "febre", "diarreia", "vomitos", "tem_doenca_muito_tempo",
+  "Coluna", "doenca_tendinite", "doenca_micose", "depressao",
+  "renal", "hepatite_b", "nervos", "pancada_forte_peito",
+  "pancada_forte_cabeca", "tosse_manha", "tosse_dia",
+  "dif_andar", "escarro", "adoece_facil"
+)
+
+# DataFrame vazio
+resultado_final <- data.frame()
+
+# Loop para cada variável
+for (fator in fatores) {
+  
+  # Verificar se variável existe
+  if (!(fator %in% names(dados))) next
+  
+  # Tabela 2x2
+  tab <- table(dados[[fator]], dados$grupo)
+  
+  # Se não for 2x2, pula
+  if (nrow(tab) != 2 || ncol(tab) != 2) next
+  
+  # Elementos da tabela
+  a <- tab[1,1]
+  b <- tab[1,2]
+  c <- tab[2,1]
+  d <- tab[2,2]
+  
+  if (any(c(a, b, c, d) == 0)) {
+    OR <- NA
+    IC_OR <- "-"
+  } else {
+    # Odds Ratio e Intervalo
+    OR <- (d*a ) / (b * c)
+    log_OR <- log(OR)
+    SE_log_OR <- sqrt(1/a + 1/b + 1/c + 1/d)
+    lower_log <- (log_OR - 1.96 * SE_log_OR)
+    upper_log <- (log_OR + 1.96 * SE_log_OR)
+    IC_lower <- exp(lower_log)
+    IC_upper <- exp(upper_log)
+    IC_OR <- paste0("(", round(IC_lower,1), "; ", round(IC_upper,1), ")")
+  }
+  
+  # Frequências
+  freq_ausente <- paste0(round(100-(prop.table(tab, 1)[2,2]*100), 1), "%")
+  freq_presente <- paste0(round(100-(prop.table(tab, 1)[1,2]*100), 1), "%")
+  
+  # p-valor
+  p_valor <- tryCatch({
+    chisq.test(tab)$p.value
+  }, error = function(e) NA)
+  
+    # Resultado do fator
+  resultado_fator <- data.frame(
+    Fator = fator,
+    Fator_Ausente = freq_ausente,
+    Fator_Presente = freq_presente,
+    p_valor = ifelse(is.na(p_valor), NA, ifelse(p_valor < 0.001, "<0.001", round(p_valor, 3))),
+    OR = round(OR,1),
+    IC95 = IC_OR
+  )
+  
+  # Agregar
+  resultado_final <- rbind(resultado_final, resultado_fator)
+}
+
+# Formatar p_valor (sem hífen agora no nome da coluna)
+resultado_final <- resultado_final %>%
+  mutate(
+    p_valor = case_when(
+      p_valor == "<0.001" ~ cell_spec(p_valor, color = "red"),
+      !is.na(as.numeric(as.character(p_valor))) & as.numeric(as.character(p_valor)) < 0.05 ~ cell_spec(p_valor, color = "red"),
+      TRUE ~ as.character(p_valor)
+    )
+  )
+
+
+
+# Mostrar a tabela
+kable(resultado_final, format = "html", escape = FALSE) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3")
+```
+
+</div>
+
+<div style="text-align: justify">
+<br><br>
+
+<br>
+
+<div style="text-align: center;">
+**Figura 1: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Escolaridade Menor que Quarta Série do Ensino Fundamental"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(EscolaridadeMenorQuartaEf), !is.na(Grupo)) %>%
+  mutate(
+    EscolaridadeMenorQuartaEf = as.factor(EscolaridadeMenorQuartaEf),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate(EscolaridadeMenorQuartaEf = case_when(
+    EscolaridadeMenorQuartaEf == 1 ~ "Sim",
+    EscolaridadeMenorQuartaEf == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(EscolaridadeMenorQuartaEf, Grupo) %>%
+  group_by(EscolaridadeMenorQuartaEf) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = EscolaridadeMenorQuartaEf, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Tinha escolaridade menor que 4.a Série do EF?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+
+<br>
+
+<div style="text-align: center;">
+**Figura 2: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Febre"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Febre), !is.na(Grupo)) %>%
+  mutate(
+    Febre = as.factor(Febre),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( Febre = case_when(
+    Febre == 1 ~ "Sim",
+    Febre == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Febre, Grupo) %>%
+  group_by(Febre) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Febre, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Febre?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 3: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Diarreia"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Diarreia), !is.na(Grupo)) %>%
+  mutate(
+    Diarreia = as.factor(Diarreia),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( Diarreia = case_when(
+    Diarreia == 1 ~ "Sim",
+    Diarreia == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Diarreia, Grupo) %>%
+  group_by(Diarreia) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Diarreia, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Diarreia?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+<div style="text-align: center;">
+**Figura 4: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Vômitos"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Vomitos), !is.na(Grupo)) %>%
+  mutate(
+    Vomitos = as.factor(Vomitos),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( Vomitos = case_when(
+    Vomitos == 1 ~ "Sim",
+    Vomitos == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Vomitos, Grupo) %>%
+  group_by(Vomitos) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Vomitos, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Vômitos?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+<div style="text-align: center;">
+**Figura 5: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Tem doença há muito tempo"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(TemDoençaMuitoTempo), !is.na(Grupo)) %>%
+  mutate(
+    TemDoençaMuitoTempo = as.factor(TemDoençaMuitoTempo),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( TemDoençaMuitoTempo = case_when(
+    TemDoençaMuitoTempo == 1 ~ "Sim",
+    TemDoençaMuitoTempo== 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(TemDoençaMuitoTempo, Grupo) %>%
+  group_by(TemDoençaMuitoTempo) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = TemDoençaMuitoTempo, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Tem alguma doença há muito tempo?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+
+</div>
+
+
+
+<div style="text-align: center;">
+**Figura 6: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Doença Da Coluna"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Coluna), !is.na(Grupo)) %>%
+  mutate(
+    Coluna = as.factor(Coluna),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate(Coluna = case_when(
+    Coluna == 1 ~ "Sim",
+     Coluna == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count( Coluna, Grupo) %>%
+  group_by( Coluna) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x =  Coluna, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Doença na Coluna?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+<div style="text-align: center;">
+**Figura 7: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Tendinite"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(DoençaTendinite), !is.na(Grupo)) %>%
+  mutate(
+    DoençaTendinite = as.factor(DoençaTendinite),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( DoençaTendinite = case_when(
+    DoençaTendinite == 1 ~ "Sim",
+    DoençaTendinite == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(DoençaTendinite, Grupo) %>%
+  group_by(DoençaTendinite) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = DoençaTendinite, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Tendinite?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+<div style="text-align: center;">
+**Figura 8: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Micose"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(DoençaMicose), !is.na(Grupo)) %>%
+  mutate(
+    DoençaTendinite = as.factor(DoençaMicose),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( DoençaMicose = case_when(
+    DoençaMicose == 1 ~ "Sim",
+    DoençaMicose == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(DoençaMicose, Grupo) %>%
+  group_by(DoençaMicose) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = DoençaMicose, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Micose?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 9: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Depressão"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Depressão), !is.na(Grupo)) %>%
+  mutate(
+    Depressão = as.factor(Depressão),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate(Depressão = case_when(
+    Depressão == 1 ~ "Sim",
+    Depressão == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Depressão, Grupo) %>%
+  group_by(Depressão) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Depressão, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Depressão?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+<div style="text-align: center;">
+**Figura 10: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Doença renal"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Renal), !is.na(Grupo)) %>%
+  mutate(
+    Renal = as.factor(Renal),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( Renal = case_when(
+    Renal== 1 ~ "Sim",
+    Renal == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Renal, Grupo) %>%
+  group_by(Renal) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Renal, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Doença Renal?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 11: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Hepatite B"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(HepatiteB), !is.na(Grupo)) %>%
+  mutate(
+    HepatiteB = as.factor(HepatiteB),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( HepatiteB = case_when(
+    HepatiteB == 1 ~ "Sim",
+    HepatiteB == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(HepatiteB, Grupo) %>%
+  group_by(HepatiteB) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = HepatiteB, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Hepatite B?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 12: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Doença de Nervos"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Nervos), !is.na(Grupo)) %>%
+  mutate(
+    Nervos = as.factor(Nervos),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( Nervos = case_when(
+  Nervos == 1 ~ "Sim",
+   Nervos== 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Nervos, Grupo) %>%
+  group_by(Nervos) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Nervos, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Doença dos Nervos?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 13: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Pancada forte no Peito"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(PancadaFortePeito), !is.na(Grupo)) %>%
+  mutate(
+    PancadaFortePeito = as.factor(PancadaFortePeito),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( PancadaFortePeito = case_when(
+    PancadaFortePeito == 1 ~ "Sim",
+    PancadaFortePeito == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(PancadaFortePeito, Grupo) %>%
+  group_by(PancadaFortePeito) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = PancadaFortePeito, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Pancada forte no Peito?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 14: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Pancada Forte na Cabeça"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(PancadaForteCabeça), !is.na(Grupo)) %>%
+  mutate(
+    PancadaForteCabeça = as.factor(PancadaForteCabeça),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( PancadaForteCabeça = case_when(
+    PancadaForteCabeça == 1 ~ "Sim",
+    PancadaForteCabeça == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(PancadaForteCabeça, Grupo) %>%
+  group_by(PancadaForteCabeça) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = PancadaForteCabeça, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Pancada Forte na Cabeça?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 15: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Tosse pela Manhã"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(TosseManhã), !is.na(Grupo)) %>%
+  mutate(
+    TosseManhã = as.factor(TosseManhã),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( TosseManhã = case_when(
+    TosseManhã == 1 ~ "Sim",
+    TosseManhã == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(TosseManhã, Grupo) %>%
+  group_by(TosseManhã) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = TosseManhã, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Tosse pela Manhã?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: center;">
+**Figura 16: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Tosse o Resto do Dia"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(TosseDia), !is.na(Grupo)) %>%
+  mutate(
+    TosseDia = as.factor(TosseDia),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( TosseDia = case_when(
+    TosseDia == 1 ~ "Sim",
+    TosseDia == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(TosseDia, Grupo) %>%
+  group_by(TosseDia) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = TosseDia, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Tosse o Resto do Dia?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+
+<div style="text-align: center;">
+**Figura 17: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Dificuldade de Andar"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(DifAndar), !is.na(Grupo)) %>%
+  mutate(
+    DifAndar = as.factor(DifAndar),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( DifAndar = case_when(
+    DifAndar == 1 ~ "Sim",
+    DifAndar == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(DifAndar, Grupo) %>%
+  group_by(DifAndar) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = DifAndar, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Dificuldade de Andar?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+
+<div style="text-align: center;">
+**Figura 18: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Escarro com Sangue"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(Escarro), !is.na(Grupo)) %>%
+  mutate(
+    Escarro = as.factor(Escarro),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( Escarro = case_when(
+    Escarro == 1 ~ "Sim",
+    Escarro == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(Escarro, Grupo) %>%
+  group_by(Escarro) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = Escarro, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Apresentou Escarro com Sangue?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+
+<div style="text-align: center;">
+**Figura 19: Distribuição de Frequências do Estado de Saúde nos dois grupos definidos pelo fator de risco "Adoece Facilmente"**
+
+```{r  echo=FALSE }
+
+# Limpa NAs e garante fatores
+df_plot <- df_full %>%
+filter(!is.na(AdoeceFacil), !is.na(Grupo)) %>%
+  mutate(
+    AdoeceFacil = as.factor(AdoeceFacil),
+    Grupo = as.factor(Grupo)
+  ) %>% 
+  mutate( Grupo = case_when(
+    Grupo == 2 ~ "Saúde Boa",
+    Grupo == 1 ~ "Saúde Ruim"
+  )) |> 
+  mutate( AdoeceFacil = case_when(
+    AdoeceFacil == 1 ~ "Sim",
+    AdoeceFacil == 2 ~ "Não"
+  ))
+  
+df_percent <- df_plot %>%
+  count(AdoeceFacil, Grupo) %>%
+  group_by(AdoeceFacil) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(df_percent, aes(x = AdoeceFacil, y = percent, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            position = position_fill(vjust = 0.5), size = 3) +
+  labs(       x = "Adoece Facilmente?", 
+       y = "Frequência",
+       fill = "Estado de Saúde") +
+    scale_y_continuous(labels = scales::percent_format())+
+  scale_fill_manual(values = c("#2ecc71","#e74c3c"))+
+  theme_minimal(base_size = 14)
+```
+</div>
+
+
+<div style="text-align: justify">
+<br><br>
+
+## **3.	Conclusão-Síntese**
+
+<p style="text-indent: 40px;">
+O presente estudo permitiu traçar o perfil demográfico, socioeconômico e de saúde dos moradores da Comunidade do GBF e identificou somente um fator sociodemográfico associado ao estado de saúde Ruim: Escolaridade inferior à quarta série do Ensino Fundamental, e não identificou algum fator socio econômico associado ao estado de saúde Ruim. As variáveis relacionadas ao tabagismo e etilismo, fatores de violência e as variáveis específicas da saúde da mulher também não se mostraram significativamente associadas ao estado de saúde Ruim.  Entretanto, vários sintomas e comorbidades foram identificados significativamente associados ao Estado de Saúde Ruim: Febre, Diarreia, Vômitos, Doença que tem há muito tempo, Doença da Coluna, Tendinite, Micose, Depressão, Doença de Rins, Hepatite B, Doença de Nervo, Pancada forte no Peito, Pancada Forte na Cabeça, Tosse pela manhã, Tosse o resto do dia, Dificuldade de Andar, Escarro com Sangue e o fator  Adoecer Facilmente. O estudo mostrou associação significativa do estado de saúde Ruim com dor nestas partes do corpo: nuca, ombro esquerdo, parte inferior das costas e pernas. Consequentemente, para o grupo de estado de saúde Ruim” foi verificada frequência significativamente maior de dificuldades em fazer esforço físico, mover móveis, carregar mantimentos, curvar-se, andar mais de 1 Km, tomar banho e executar trabalho. Adicionalmente as distribuições dos sentimentos são significativamente diferentes entre os dois grupos considerados: há maior concentração de pessoas que tem nervosismo, depressão,  esgotamento e cansaço  mais frequentemente no grupo que tem Estado de Saúde Ruim e há maior concentração de pessoas  que tem os sentimentos “Cheio de energia”, “Calma” e “Felicidade” mais frequentemente no grupo de moradores da Comunidade do GBF que não tem Estado de Saúde Ruim.  Propõe-se para um estudo futuro realizar uma análise de Regressão Logística que possa, a partir de um bom modelo, identificar os principais fatores associados ao Estado de Saúde Ruim dentre todos os fatores evidenciados pelo presente estudo. 
+</p>
+
+
+
+
