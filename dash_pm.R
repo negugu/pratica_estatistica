@@ -11,9 +11,12 @@ library(lubridate)
 library(BlandAltmanLeh)
 library(plotly)
 library(patchwork)
+dados_totais = read_xlsx("C:/Users/User/OneDrive/Documentos/pratica_est/pratica estatistica 2/shiny_pm/dados_completos_consolidado_donkelar.xlsx" )
+dados=read.csv("C:/Users/User/OneDrive/Documentos/pratica_est/pratica estatistica 2/shiny_pm/PM2.5_diario_2023.csv")
+mapa = read_sf("C:/Users/User/OneDrive/Documentos/pratica_est/pratica estatistica 2/shiny_pm/SE_Municipios_2024.shp")
 
 
-
+setwd("C:/Users/User/OneDrive/Documentos/pratica_est/pratica estatistica 2/shiny_pm")
 ui <- dashboardPage(
   header<-dashboardHeader(title = " PM 2.5  Sergipe"),
   sidebar<-dashboardSidebar(
@@ -41,12 +44,11 @@ ui <- dashboardPage(
 server <- function(input, output) {
   #Lendo e manipulando a base de dados
   
-  dados_totais = read_xlsx("dados_completos_consolidado_donkelar.xlsx") 
-  Se_totais = dados_totais %>% 
+    Se_totais = dados_totais %>% 
     filter(SIGLA_UF == 28) %>% 
     mutate(CD_MUN = as.character(CD_MUN))
   
-  dados=read.csv("PM2.5_diario_2023.csv")
+  
   dados$Data=ymd(dados$Date)
   dados$mes=month(dados$Data)
   dados$ano=year(dados$Data)
@@ -78,7 +80,6 @@ server <- function(input, output) {
   Se_mun_mes$Cod = as.character(Se_mun_mes$Cod)
   
   
-  mapa = read_sf("SE_Municipios_2024.shp")
   Se_mun$Cod = as.character(Se_mun$Cod)
   
   mapa=left_join(mapa,Se_mun,join_by("CD_MUN"=="Cod"))
